@@ -7,7 +7,7 @@ const API = axios.create({
   },
 });
 
-// Interceptor to attach token to all requests
+// Attach token
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -16,12 +16,10 @@ API.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Interceptor to handle responses
+// Handle 401
 API.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -33,24 +31,39 @@ API.interceptors.response.use(
   }
 );
 
-// Auth APIs
+/* ================= AUTH ================= */
+
 export const authAPI = {
-  login: (email, password) => API.post("/transactions/login", { email, password }),
-  register: (email, password, name, role) =>
-    API.post("/transactions/register", { email, password, name, role }),
+  login: (email) =>
+    API.post("/transactions/login", { email }),
+
+  register: (name, email, password, role) =>
+    API.post("/transactions/register", {
+      name,
+      email,
+      password,
+      role,
+    }),
 };
 
-// Transaction APIs
+/* ================= TRANSACTIONS ================= */
+
 export const transactionAPI = {
   getAll: () => API.get("/transactions"),
+
   create: (data) => API.post("/transactions", data),
+
   update: (id, data) => API.put(`/transactions/${id}`, data),
+
   delete: (id) => API.delete(`/transactions/${id}`),
 };
 
-// Dashboard APIs
+/* ================= DASHBOARD ================= */
+
 export const dashboardAPI = {
   getSummary: () => API.get("/dashboard/summary"),
+  getRecent: () => API.get("/dashboard/recent"),
+  getCategory: () => API.get("/dashboard/category"),
 };
 
 export default API;
